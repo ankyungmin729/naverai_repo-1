@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>naver ai mic test</title>
+	</head>
+	<body>
+		<button id="record">녹음 시작</button>
+		<button id="stop">녹음 종료</button>
+		<div id="sound"></div>	
+	</body>
+	<script>
+		const $record = document.getElementById("record");
+		const $stop = document.getElementById("stop");
+		const $sound = document.getElementById("sound");
+		
+		if (navigator.mediaDevices) {
+			console.log('지원 가능');
+			const constraint = { audio: true };
+			const chunks = [];
+			navigator.mediaDevices.getUserMedia(constraint)
+				.then((stream) => {
+					const mediaRecorder = new MediaRecorder(stream);
+					$record.onclick = () => {
+						mediaRecorder.start();
+						$record.style.color = 'red';
+						$record.style.backgroundColor = 'blue';
+					};
+					$stop.onclick = () => {
+						mediaRecorder.stop();
+						$record.style.color = '';
+						$record.style.backgroundColor = '';
+					};
+					
+					mediaRecorder.ondataavailable = (d) => {
+						chunks.push(d.data);
+					}
+					
+					mediaRecorder.onstop = (d) => {
+						const $audio = document.createElement('audio');
+						$audio.setAttribute('controls', '');
+						$audio.controls = true;
+						$sound.append($audio);
+						
+						const blob = new Blob(chunks, { type: 'audio/mp3' });
+						const mp3url = URL.createObjectURL(blob);
+						$audio.src = mp3url;
+						
+						chunks = [];
+					}
+				})
+				.catch((err) => {
+					console.log(err);
+				});
+		}		
+	</script>
+</html>
