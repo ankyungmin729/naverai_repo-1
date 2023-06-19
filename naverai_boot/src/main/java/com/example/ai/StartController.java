@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 public class StartController {
 	@GetMapping("/")
 	public String start() {
+		System.out.println("신장훈");
 		return "start";
 	}
 }
